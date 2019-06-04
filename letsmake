@@ -1,0 +1,80 @@
+#!/bin/bash
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+if [ -f $DIR/.env ]
+then
+    export $(cat $DIR/.env | sed 's/#.*//g' | xargs)
+else
+    echo "Please create .env file in program folder"
+    exit 1
+fi
+BUILD_LOG="$HOME/build.log"
+USE_CCACHE=1
+LC_ALL=C
+ANDROID_JACK_VM_ARGS="-Xmx$JACK_MEMORY -Dfile.encoding=UTF-8 -XX:+TieredCompilation"
+CFLAGS="-Wno-error"
+CXXFLAGS="$CFLAGS"
+PROJECT_FOLDER="$HOME/$PROJECT_FOLDER"
+
+clearlog () {
+	rm -f $BUILD_LOG
+}
+
+clearBuild () {
+	cd $PROJECT_FOLDER/kernel/asus/sdm660
+	make mrproper -j$THREADS
+	cd $PROJECT_FOLDER/out/target/product/X01BD/
+	rm -rf data fake_packages obj_arm root   \
+		   install obj recovery dex_bootjars \
+		   symbols system vendor
+}
+
+buildKernel () {
+	cd $PROJECT_FOLDER
+	make bootimage -j$THREADS 2>&1 >$BUILD_LOG
+}
+
+packKernel () {
+	cd $DIR
+	cp $PROJECT_FOLDER/out/target/product/X01BD/boot.img $DIR/boot.img
+    ./dist/unpack-boot boot.img
+    rm -f $DIR/dist/AnyKernel/zImage
+    mv $DIR/boot/zImage $DIR/dist/AnyKernel/zImage
+    FILENAME="$AUTHOR-$KERNEL_NAME-$(date +%d%m%y).zip"
+    cd $DIR/dist/AnyKernel
+    zip -r9 $FILENAME * -x .git *placeholder
+    mv AUTHOR-* $DIR/release
+    cd $DIR
+    rm -rf boot
+    rm boot.img
+}
+
+buildSystem () {
+	cd $PROJECT_FOLDER
+	mka bacon -j$THREADS 2>&1 >$BUILD_LOG
+}
+
+initializeEnviroment () {
+	cd $PROJECT_FOLDER
+	source build/envsetup.sh
+	lunch $FINGERPRINT
+}
+
+clearlog
+initializeEnviroment
+
+case $1 in
+    kernel)
+        clearBuild
+        buildKernel
+        packKernel
+        ;;
+    system)
+        clearBuild
+        buildSystem
+    sync)
+        cd $PROJECT_FOLDER
+        repo sync -c -j$THREADS \
+            --force-sync \
+            --no-clone-bundle \
+            --no-tags
+esac
