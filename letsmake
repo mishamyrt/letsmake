@@ -56,7 +56,7 @@ buildSystem () {
 initializeEnviroment () {
 	cd $PROJECT_FOLDER
 	source build/envsetup.sh
-	lunch $FINGERPRINT
+	lunch $TARGET
 }
 
 clearlog
