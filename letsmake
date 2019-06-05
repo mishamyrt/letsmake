@@ -73,6 +73,7 @@ case $1 in
     system)
         clearBuild
         buildSystem
+        ;;
     sync)
         cd $PROJECT_FOLDER
         repo sync -c -j$THREADS \
