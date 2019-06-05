@@ -59,6 +59,7 @@ initializeEnviroment () {
     export CFLAGS="-Wno-error"
     export CXXFLAGS="$CFLAGS"
     export CC_WRAPPER="prebuilts/misc/linux-x86/ccache/ccache"
+    export CXX_WRAPPER="$CC_WRAPPER"
 }
 
 clearlog
