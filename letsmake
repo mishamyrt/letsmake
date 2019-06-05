@@ -14,6 +14,7 @@ ANDROID_JACK_VM_ARGS="-Xmx$JACK_MEMORY -Dfile.encoding=UTF-8 -XX:+TieredCompilat
 CFLAGS="-Wno-error"
 CXXFLAGS="$CFLAGS"
 PROJECT_FOLDER="$HOME/$PROJECT_FOLDER"
+CC_WRAPPER="prebuilts/misc/linux-x86/ccache/ccache"
 THREADS=$(echo $(cat /proc/cpuinfo | awk '/^processor/{print $3}' | wc -l) + 1 | bc)
 
 clearlog () {
