@@ -81,6 +81,7 @@ case $1 in
             --force-sync \
             --no-clone-bundle \
             --no-tags
+        ;;
     pack)
         packKernel
 esac
