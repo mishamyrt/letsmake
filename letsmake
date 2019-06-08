@@ -41,7 +41,7 @@ packKernel () {
     FILENAME="$AUTHOR-$KERNEL_NAME-$(date +%d%m%y).zip"
     cd $DIR/dist/AnyKernel
     zip -r9 $FILENAME * -x .git *placeholder
-    mv AUTHOR-* $DIR/release
+    mv $AUTHOR-* $DIR/release
     cd $DIR
     rm -rf boot
     rm boot.img
