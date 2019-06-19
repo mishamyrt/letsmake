@@ -8,9 +8,11 @@ else
     exit 1
 fi
 BUILD_LOG="$HOME/build.log"
-USE_CCACHE=1
-LC_ALL=C
-ANDROID_JACK_VM_ARGS="-Xmx$JACK_MEMORY -Dfile.encoding=UTF-8 -XX:+TieredCompilation"
+export USE_CCACHE=1
+export CCACHE_DIR="~/.ccache"
+export LC_ALL=C
+ccache -M 30G
+export ANDROID_JACK_VM_ARGS="-Xmx$JACK_MEMORY -Dfile.encoding=UTF-8 -XX:+TieredCompilation"
 PROJECT_FOLDER="$HOME/$PROJECT_FOLDER"
 THREADS=$(echo $(cat /proc/cpuinfo | awk '/^processor/{print $3}' | wc -l) + 1 | bc)
 
